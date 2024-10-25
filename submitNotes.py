@@ -27,7 +27,7 @@ def lambda_handler(event, context):
         # Read the file contents and parse the JSON
         file_contents = response['Body'].read().decode('utf-8')
         json_data = json.loads(file_contents)
-        written_timestamp = json_data["written_timestamp"]
+        written_timestamp = int(json_data["written_timestamp"])
         
     except s3_client.exceptions.NoSuchKey:
         return {

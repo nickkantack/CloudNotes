@@ -10,6 +10,7 @@
         <link rel="icon" href="./icon-192.png" />
         <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet"/>
         <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+        <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.20.min.js"></script>
     </head>
     <body>
         This is some filler text
@@ -20,6 +21,7 @@
         </div>
         <button id="testButton">Test</button>
         <script src="./auth.js"></script>
+        <script src="./databaseClient.js"></script>
         <script>
             const quill = new Quill("#editor", {
                 theme: "snow",
@@ -32,10 +34,40 @@
                 },
             });
 
-            /*
-            setInterval(() => {
-                console.log(quill.getContents());   
-            }, 2000);
+            let submitTimeout;
+            let pullTimeout;
+            function rescheduleSubmit() {
+                clearTimeout(submitTimeout);
+                submitTimeout = setTimeout(async () => {
+                    // Wait to pull from server until we've sent
+                    clearTimeout(pullTimeout);
+                    console.log(`Submitting`);
+                    await submitNotes(quill.getContents());
+                    // Restart the regular pulls from server
+                    reschedulePull();
+                }, 2000);
+            }
+            function reschedulePull() {
+                clearTimeout(pullTimeout);
+                pullTimeout = setTimeout(async () => {
+                    const response = await pullNotes();
+                    const notesFromCloud = JSON.parse(response.body);
+                    console.log(notesFromCloud);
+                    reschedulePull();
+                }, 10000);
+            }
+            // TODO make a separate, immediate call to pull the notes on startup so we
+            // have a current copy of the notes
+            reschedulePull();
+
+
+            quill.on('text-change', (delta, oldDelta, source) => {
+                console.log(`trigger`);
+                if (source == 'user') {
+                    console.log(`user input caused scheduled change`);
+                    rescheduleSubmit();
+                }
+            });
 
             document.getElementById(`testButton`).addEventListener(`click`, () => {
                 quill.setContents([
@@ -44,7 +76,6 @@
                     { insert: '\n' },
                 ]);
             });
-            */
 
         </script>
         <script>
