@@ -14,40 +14,57 @@
     <body>
         This is some filler text
         <div id="editor">
-        <p>Hello World!</p>
-        <p>Some initial <strong>bold</strong> text</p>
-        <p><br /></p>
+            <p>Hello World!</p>
+            <p>Some initial <strong>bold</strong> text</p>
+            <p><br /></p>
         </div>
+        <button id="testButton">Test</button>
+        <script src="./auth.js"></script>
         <script>
-        const quill = new Quill("#editor", {
-            theme: "snow",
-            modules: {
-                toolbar: [
-                ['bold', 'italic', 'strike'],
-                ['link', 'blockquote', 'code-block', 'image'],
-                [{ list: 'ordered' }, { list: 'bullet' }],
-                ],
-            },
-        });
+            const quill = new Quill("#editor", {
+                theme: "snow",
+                modules: {
+                    toolbar: [
+                    ['bold', 'italic', 'strike'],
+                    ['link', 'blockquote', 'code-block', 'image'],
+                    [{ list: 'ordered' }, { list: 'bullet' }],
+                    ],
+                },
+            });
+
+            /*
+            setInterval(() => {
+                console.log(quill.getContents());   
+            }, 2000);
+
+            document.getElementById(`testButton`).addEventListener(`click`, () => {
+                quill.setContents([
+                    { insert: 'Hello ' },
+                    { insert: 'World!', attributes: { bold: true } },
+                    { insert: '\n' },
+                ]);
+            });
+            */
+
         </script>
         <script>
-        let isLocal = 0;
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() { 
-            if (xmlHttp.readyState == 4) {
-                if ("serviceWorker" in navigator) {
-                    if (xmlHttp.responseText === "1" && xmlHttp.status === 200) {
-                        navigator.serviceWorker.register("/sw.js",
-                        { scope: "/CloudNotes/" });
-                    } else {
-                        navigator.serviceWorker.register("/CloudNotes/sw.js",
-                        { scope: "/CloudNotes/" });
+            let isLocal = 0;
+            const xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() { 
+                if (xmlHttp.readyState == 4) {
+                    if ("serviceWorker" in navigator) {
+                        if (xmlHttp.responseText === "1" && xmlHttp.status === 200) {
+                            navigator.serviceWorker.register("/sw.js",
+                            { scope: "/CloudNotes/" });
+                        } else {
+                            navigator.serviceWorker.register("/CloudNotes/sw.js",
+                            { scope: "/CloudNotes/" });
+                        }
                     }
                 }
             }
-        }
-        xmlHttp.open("GET", "./isLocal.txt", true);
-        xmlHttp.send(null);
+            xmlHttp.open("GET", "./isLocal.txt", true);
+            xmlHttp.send(null);
         </script>
     </body>
 </html>
