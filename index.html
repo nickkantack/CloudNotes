@@ -15,9 +15,7 @@
     <body>
         This is some filler text
         <div id="editor">
-            <p>Hello World!</p>
-            <p>Some initial <strong>bold</strong> text</p>
-            <p><br /></p>
+            <i>Getting notes from cloud...</i>
         </div>
         <button id="testButton">Test</button>
         <script src="./auth.js"></script>
@@ -38,11 +36,11 @@
             let pullTimeout;
             function rescheduleSubmit() {
                 clearTimeout(submitTimeout);
+                clearTimeout(pullTimeout);
                 submitTimeout = setTimeout(async () => {
                     // Wait to pull from server until we've sent
-                    clearTimeout(pullTimeout);
-                    console.log(`Submitting`);
-                    await submitNotes(quill.getContents());
+                    console.log(await submitNotes(quill.getContents()));
+                    console.log(`Synced with cloud (upload style)`);
                     // Restart the regular pulls from server
                     reschedulePull();
                 }, 2000);
@@ -52,17 +50,27 @@
                 pullTimeout = setTimeout(async () => {
                     const response = await pullNotes();
                     const notesFromCloud = JSON.parse(response.body);
-                    console.log(notesFromCloud);
+                    // Record where the cursor was
+                    const selection = quill.getSelection();
+                    // Paste over the current editor text
+                    quill.setContents(notesFromCloud.data);
+                    // Place the cursor back where it was
+                    quill.setSelection(selection);
+                    console.log(`Synced with cloud (download style)`);
                     reschedulePull();
                 }, 10000);
             }
             // TODO make a separate, immediate call to pull the notes on startup so we
             // have a current copy of the notes
+            (async () => {
+                const response = await pullNotes();
+                const notesFromCloud = JSON.parse(response.body);
+                quill.setContents(notesFromCloud.data);
+            })();
             reschedulePull();
 
 
             quill.on('text-change', (delta, oldDelta, source) => {
-                console.log(`trigger`);
                 if (source == 'user') {
                     console.log(`user input caused scheduled change`);
                     rescheduleSubmit();
