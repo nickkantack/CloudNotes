@@ -2,7 +2,7 @@
   "name": "CloudNotes",
   "short_name": "CloudNotes",
   "description": "Describe the app",
-  "start_url": "index.html",
+  "start_url": "/CloudNotes/index.html",
   "scope": "/CloudNotes/",
   "icons": [
     {
