@@ -1,0 +1,13 @@
+#editor {
+    font-size: 2vmin;
+}
+#syncStatusSpan {
+    font-family: sans-serif;
+    margin: 0.5em;
+}
+.saving {
+    color: #444;
+}
+.saved {
+    color: #171;
+}

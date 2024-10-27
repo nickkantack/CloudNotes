@@ -1,3 +1,6 @@
+
+const syncStatusSpan = document.getElementById(`syncStatusSpan`);
+
 let submitTimeout;
 let pullTimeout;
 function rescheduleSubmit() {
@@ -7,6 +10,9 @@ function rescheduleSubmit() {
         // Wait to pull from server until we've sent
         console.log(await submitNotes(quill.getContents()));
         console.log(`Synced with cloud (upload style)`);
+        syncStatusSpan.innerHTML = `Changes saved`;
+        syncStatusSpan.classList.remove(`saving`);
+        syncStatusSpan.classList.add(`saved`);
         // Restart the regular pulls from server
         reschedulePull();
     }, 1000);
@@ -38,7 +44,9 @@ reschedulePull();
 
 quill.on('text-change', (delta, oldDelta, source) => {
     if (source == 'user') {
-        console.log(`user input caused scheduled change`);
+        syncStatusSpan.innerHTML = `Saving changes...`;
+        syncStatusSpan.classList.remove(`saved`);
+        syncStatusSpan.classList.add(`saving`);
         rescheduleSubmit();
     }
 });
